@@ -39,7 +39,7 @@ class TidalPlaybackWatcher extends EventTarget {
 			throw new Error("player is missing 'testPlaybackState' dataset value");
 		if(!this.player.dataset.testPlaybackState)
 			throw new Error("player 'testPlaybackState' is empty");
-		if(!['PLAYING', 'NOT_PLAYING'].includes(this.player.dataset.testPlaybackState))
+		if(!Object.keys(this.constructor.state_map).includes(this.player.dataset.testPlaybackState))
 			throw new Error(`player 'testPlaybackState' has unrecognized state '${this.player.dataset.testPlaybackState}'`);
 	}
 
