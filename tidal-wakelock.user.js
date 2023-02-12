@@ -3,7 +3,7 @@
 // @name Tidal Playback Wakelock
 // @description Sets a wakelock while Tidal is playing to keep the screen unlocked
 // @match https://listen.tidal.com/*
-// @version 0.2
+// @version 0.2.1
 // ==/UserScript==
 
 class TidalPlaybackWatcher extends EventTarget {
@@ -118,7 +118,16 @@ class TidalWakelock extends EventTarget {
 		if(this.wlock_tgt_state) {
 			console.info(`${this.constructor.name}: Requesting wakelock`);
 			this.dispatchEvent(new CustomEvent('locking'));
-			this.wlock = await navigator.wakeLock.request('screen');
+			while(!this.wlock) {
+				try {
+					this.wlock = await navigator.wakeLock.request('screen');
+				}
+				catch (e) {
+					console.info(`${this.constructor.name}: wakelock request failed: ${e.message}`);
+					console.debug(`${this.constructor.name}: retrying wakelock request`);
+					await new Promise(r => setTimeout(r, 5000));
+				}
+			}
 			console.debug(`${this.constructor.name}: wakelock acquired`);
 			this.dispatchEvent(new CustomEvent('locked'));
 			this.wlock.addEventListener('release', this.lock_released);
