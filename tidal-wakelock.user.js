@@ -3,7 +3,7 @@
 // @name Tidal Playback Wakelock
 // @description Sets a wakelock while Tidal is playing to keep the screen unlocked
 // @match https://listen.tidal.com/*
-// @version 0.2.1
+// @version 0.2.2
 // ==/UserScript==
 
 class TidalPlaybackWatcher extends EventTarget {
@@ -272,7 +272,7 @@ let tries = 30,  // try for up to 60 seconds
 	attach_handle;
 attach_handle = setInterval(() => {
 		if(--tries <= 0)
-			clearTimeout(attach_handle);
+			clearInterval(attach_handle);
 		try {
 			console.debug("Searching for player element '#footerPlayer'");
 			let player = document.getElementById('footerPlayer');
@@ -283,7 +283,7 @@ attach_handle = setInterval(() => {
 				throw new Error("'#footerPlayer' element not found");
 			}
 			console.debug("Player found: %o", player);
-			clearTimeout(attach_handle);
+			clearInterval(attach_handle);
 			let wl = new TidalWakelock(player);
 			console.info("TidalWakelock attached to player");
 			new WakelockStatusComponent(player, wl);
